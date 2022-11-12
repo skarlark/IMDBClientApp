@@ -1,0 +1,24 @@
+<div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource1" style="width: 1000px;">
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let movie">{{movie.id}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let movie">{{movie.title}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="year">
+            <th mat-header-cell *matHeaderCellDef>Year</th>
+            <td mat-cell *matCellDef="let movie">{{movie.year}}</td>
+        </ng-container>
+
+        <tr mat-hear-row *matHeaderRowDef="movieColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: movieColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[50, 100, 1000]" showFirstLastButtons aria-label="Select page of periodic elements"
+        (page)="nextPage($event)">
+    </mat-paginator>
+</div>
