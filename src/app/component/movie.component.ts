@@ -62,7 +62,7 @@ export class MovieComponent implements AfterViewInit {
     }
 
     public searchMovieByNameWildCard(nameWildCard: string): void {
-        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?name=" + nameWildCard).subscribe(data => {
+        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?name=" + encodeURIComponent(nameWildCard)).subscribe(data => {
             this.movies = [];
             this.movies = this.movies.concat(data);
             this.dataSource = new MatTableDataSource(this.movies);
