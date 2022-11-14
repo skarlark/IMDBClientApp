@@ -11,7 +11,11 @@ export class AppComponent {
   value = "";
 
   public ifActor(): boolean {
-    return this.value == 'Actor';
+    return this.value === 'Actor';
+  }
+
+  public ifMovie(): boolean {
+    return this.value === 'Movie';
   }
 
   public setValue(value: string): void {

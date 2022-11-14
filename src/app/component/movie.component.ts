@@ -15,9 +15,10 @@ import { Movie } from '../model/movie';
 
 export class MovieComponent implements AfterViewInit {
 
+    public movieName: string = "";
     movieColumns: string[] = ['id', 'title', 'year'];
     movies: Movie[] = [];
-    dataSource1: MatTableDataSource<Movie> = new MatTableDataSource(this.movies);
+    dataSource: MatTableDataSource<Movie> = new MatTableDataSource(this.movies);
 
     constructor(private httpClient: HttpClient) {
     }
@@ -26,30 +27,55 @@ export class MovieComponent implements AfterViewInit {
 
 
     ngOnInit(): void {
-        
-        
         this.getMovies();
-        this.dataSource1.paginator = this.paginator;
+
     }
 
     ngAfterViewInit() {
-        
+        this.dataSource.paginator = this.paginator;
     }
-
-
 
     public getMovies(): void {
         this.httpClient.get<Movie[]>("http://localhost:8080/movies").subscribe(response => {
             this.movies = response;
-            this.dataSource1 = new MatTableDataSource(this.movies);
+            this.dataSource = new MatTableDataSource(this.movies);
+            this.dataSource.paginator = this.paginator;
         });
     }
 
 
     nextPage(event: PageEvent) {
-        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?page=" + event.pageIndex.toString() + "&size=" + event.pageSize.toString()).subscribe(data => {
-            this.movies = data;
-            this.dataSource1 = new MatTableDataSource(this.movies);
+        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?page=" + event.pageIndex.toString() + "&size=" + (event.pageSize).toString()).subscribe(data => {
+            this.movies = this.movies.concat(data);
+            this.dataSource = new MatTableDataSource(this.movies);
+            this.dataSource.paginator = this.paginator;
+        });
+    }
+
+    public searchMovieById(id: string): void {
+        this.httpClient.get<Movie>("http://localhost:8080/movies" + "/" + id).subscribe(data => {
+            this.movies = [];
+            this.movies.push(data);
+            this.dataSource = new MatTableDataSource(this.movies);
+            this.dataSource.paginator = this.paginator;
+        });
+    }
+
+    public searchMovieByNameWildCard(nameWildCard: string): void {
+        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?name=" + nameWildCard).subscribe(data => {
+            this.movies = [];
+            this.movies = this.movies.concat(data);
+            this.dataSource = new MatTableDataSource(this.movies);
+            this.dataSource.paginator = this.paginator;
+        });
+    }
+
+    public searchMovieByActorId(actorId: string): void {
+        this.httpClient.get<Movie[]>("http://localhost:8080/actors/" + actorId + "/appearances").subscribe(data => {
+            this.movies = [];
+            this.movies = this.movies.concat(data);
+            this.dataSource = new MatTableDataSource(this.movies);
+            this.dataSource.paginator = this.paginator;
         });
     }
 }
