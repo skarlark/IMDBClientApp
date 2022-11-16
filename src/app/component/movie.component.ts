@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AfterViewInit, ViewChild } from '@angular/core';
-import { HttpClient, HttpParams, HttpResponse } from "@angular/common/http";
+import { HttpClient, HttpParams, HttpResponse, HttpHeaders } from "@angular/common/http";
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, throwError } from 'rxjs';
@@ -31,12 +31,16 @@ export class MovieComponent implements AfterViewInit {
 
     }
 
+    getHeaders(): HttpHeaders {
+        return new HttpHeaders({ Authorization: 'Basic ' + sessionStorage.getItem('token') });
+    }
+
     ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
     }
 
     public getMovies(): void {
-        this.httpClient.get<Movie[]>("http://localhost:8080/movies").subscribe(response => {
+        this.httpClient.get<Movie[]>("http://localhost:8080/movies", { headers: this.getHeaders() }).subscribe(response => {
             this.movies = response;
             this.dataSource = new MatTableDataSource(this.movies);
             this.dataSource.paginator = this.paginator;
@@ -45,7 +49,7 @@ export class MovieComponent implements AfterViewInit {
 
 
     nextPage(event: PageEvent) {
-        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?page=" + event.pageIndex.toString() + "&size=" + (event.pageSize).toString()).subscribe(data => {
+        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?page=" + event.pageIndex.toString() + "&size=" + (event.pageSize).toString(), { headers: this.getHeaders() }).subscribe(data => {
             this.movies = this.movies.concat(data);
             this.dataSource = new MatTableDataSource(this.movies);
             this.dataSource.paginator = this.paginator;
@@ -53,7 +57,7 @@ export class MovieComponent implements AfterViewInit {
     }
 
     public searchMovieById(id: string): void {
-        this.httpClient.get<Movie>("http://localhost:8080/movies" + "/" + id).subscribe(data => {
+        this.httpClient.get<Movie>("http://localhost:8080/movies" + "/" + id, { headers: this.getHeaders() }).subscribe(data => {
             this.movies = [];
             this.movies.push(data);
             this.dataSource = new MatTableDataSource(this.movies);
@@ -62,7 +66,7 @@ export class MovieComponent implements AfterViewInit {
     }
 
     public searchMovieByNameWildCard(nameWildCard: string): void {
-        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?name=" + encodeURIComponent(nameWildCard)).subscribe(data => {
+        this.httpClient.get<Movie[]>("http://localhost:8080/movies" + "?name=" + encodeURIComponent(nameWildCard), { headers: this.getHeaders() }).subscribe(data => {
             this.movies = [];
             this.movies = this.movies.concat(data);
             this.dataSource = new MatTableDataSource(this.movies);
@@ -71,7 +75,7 @@ export class MovieComponent implements AfterViewInit {
     }
 
     public searchMovieByActorId(actorId: string): void {
-        this.httpClient.get<Movie[]>("http://localhost:8080/actors/" + actorId + "/appearances").subscribe(data => {
+        this.httpClient.get<Movie[]>("http://localhost:8080/actors/" + actorId + "/appearances", { headers: this.getHeaders() }).subscribe(data => {
             this.movies = [];
             this.movies = this.movies.concat(data);
             this.dataSource = new MatTableDataSource(this.movies);
